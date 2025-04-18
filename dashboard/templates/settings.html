@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}PhishFence - Settings{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Settings</h1>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark border h-100">
+            <div class="card-body">
+                <h5 class="card-title">Whitelist</h5>
+                <p class="card-text text-muted">Domains in the whitelist will always be allowed through the proxy
+                    without analysis.</p>
+
+                <form action="/settings/whitelist" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="whitelist-domains" class="form-label">Domains (one per line)</label>
+                        <textarea class="form-control bg-dark text-light" id="whitelist-domains" name="domains" rows="8"
+                            placeholder="example.com&#10;*.trusteddomain.com">{% for domain in whitelist %}{{ domain }}{% if not loop.last %}
+{% endif %}{% endfor %}</textarea>
+                        <div class="form-text">Use * as a wildcard for subdomains, e.g. *.example.com</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Whitelist</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark border h-100">
+            <div class="card-body">
+                <h5 class="card-title">Blacklist</h5>
+                <p class="card-text text-muted">Domains in the blacklist will always be blocked by the proxy.</p>
+
+                <form action="/settings/blacklist" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="blacklist-domains" class="form-label">Domains (one per line)</label>
+                        <textarea class="form-control bg-dark text-light" id="blacklist-domains" name="domains" rows="8"
+                            placeholder="badsite.com&#10;*.malicious-domain.com">{% for domain in blacklist %}{{ domain }}{% if not loop.last %}
+{% endif %}{% endfor %}</textarea>
+                        <div class="form-text">Use * as a wildcard for subdomains, e.g. *.example.com</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Blacklist</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark border">
+            <div class="card-body">
+                <h5 class="card-title">Trusted Domains</h5>
+                <p class="card-text text-muted">These domains are used for similarity checking to detect phishing
+                    attempts.</p>
+
+                <form action="/settings/trusted" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="trusted-domains" class="form-label">Domains (one per line)</label>
+                        <textarea class="form-control bg-dark text-light" id="trusted-domains" name="domains" rows="8"
+                            placeholder="google.com&#10;microsoft.com&#10;apple.com">{% for domain in trusted_domains %}{{ domain }}{% if not loop.last %}
+{% endif %}{% endfor %}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Trusted Domains</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark border">
+            <div class="card-body">
+                <h5 class="card-title">VirusTotal Integration</h5>
+                <p class="card-text text-muted">Add your VirusTotal API key to check URLs against known threats.</p>
+
+                <form action="/settings/virustotal" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="virustotal-key" class="form-label">API Key</label>
+                        <input type="text" class="form-control bg-dark text-light" id="virustotal-key" name="api_key"
+                            value="{{ virustotal_api_key }}" placeholder="Enter your VirusTotal API key">
+                        <div class="form-text">Get a free API key at <a href="https://www.virustotal.com/gui/join-us"
+                                target="_blank">virustotal.com</a></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save API Key</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark border">
+            <div class="card-body">
+                <h5 class="card-title">Detection Thresholds</h5>
+                <p class="card-text text-muted">Configure the sensitivity of different detection mechanisms.</p>
+
+                <form action="/settings/thresholds" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="domain-similarity-threshold" class="form-label">Domain Similarity (0.0 -
+                            1.0)</label>
+                        <input type="number" class="form-control bg-dark text-light" id="domain-similarity-threshold"
+                            name="domain_similarity"
+                            value="{{ config.get('detection_thresholds.domain_similarity', 0.8) }}" step="0.1" min="0"
+                            max="1" required>
+                        <div class="form-text">Higher values are more strict (fewer false positives)</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="link-mismatch-threshold" class="form-label">Link Mismatch (0.0 - 1.0)</label>
+                        <input type="number" class="form-control bg-dark text-light" id="link-mismatch-threshold"
+                            name="link_mismatch" value="{{ config.get('detection_thresholds.link_mismatch', 0.5) }}"
+                            step="0.1" min="0" max="1" required>
+                        <div class="form-text">Higher values are more strict (fewer false positives)</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ml-model-threshold" class="form-label">ML Model (0.0 - 1.0)</label>
+                        <input type="number" class="form-control bg-dark text-light" id="ml-model-threshold"
+                            name="ml_model" value="{{ config.get('detection_thresholds.ml_model', 0.7) }}" step="0.1"
+                            min="0" max="1" required>
+                        <div class="form-text">Higher values are more strict (fewer false positives)</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Thresholds</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-dark border">
+            <div class="card-body">
+                <h5 class="card-title">System Information</h5>
+
+                <div class="list-group list-group-flush bg-dark">
+                    <div class="list-group-item bg-dark d-flex justify-content-between">
+                        <span>Version:</span>
+                        <span class="fw-bold">{{ config.get('version', '1.0.0') }}</span>
+                    </div>
+                    <div class="list-group-item bg-dark d-flex justify-content-between">
+                        <span>Proxy Port:</span>
+                        <span class="fw-bold">8080</span>
+                    </div>
+                    <div class="list-group-item bg-dark d-flex justify-content-between">
+                        <span>Dashboard Port:</span>
+                        <span class="fw-bold">5000</span>
+                    </div>
+                    <div class="list-group-item bg-dark d-flex justify-content-between">
+                        <span>Config Path:</span>
+                        <span class="fw-bold">~/.phishfence/config.json</span>
+                    </div>
+                    <div class="list-group-item bg-dark d-flex justify-content-between">
+                        <span>Certificate Path:</span>
+                        <span class="fw-bold">~/.phishfence/certificates/</span>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a href="#" class="btn btn-outline-secondary"
+                        onclick="alert('Certificate management not implemented in demo')">
+                        <i class="bi bi-shield-lock"></i> Manage Certificates
+                    </a>
+                    <a href="#" class="btn btn-outline-danger ms-2"
+                        onclick="return confirm('Are you sure you want to reset all settings to default?')">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset to Default
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set up form validation
+        setupFormValidation();
+
+        // Highlight navigation item
+        const settingsLink = document.querySelector('a[href="{{ url_for("settings") }}"]');
+        if (settingsLink) {
+            settingsLink.classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

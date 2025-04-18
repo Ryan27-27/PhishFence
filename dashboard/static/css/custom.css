@@ -1,0 +1,63 @@
+/* PhishFence Dashboard Custom Styles */
+
+/* Make sure tables use dark mode colors */
+.table-dark {
+    --bs-table-bg: var(--bs-dark-bg-subtle);
+    --bs-table-striped-bg: var(--bs-dark);
+    --bs-table-striped-color: var(--bs-white);
+}
+
+/* Log panel */
+.log-time {
+    white-space: nowrap;
+    min-width: 150px;
+}
+
+.log-level {
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.log-message {
+    word-break: break-word;
+}
+
+/* Make cards consistently sized */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Stat cards */
+.display-4 {
+    font-size: 2.5rem;
+}
+
+/* Navigation improvements */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Settings page form adjustments */
+.settings-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Footer styling */
+.footer {
+    margin-top: 4rem;
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+}
